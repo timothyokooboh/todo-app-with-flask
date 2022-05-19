@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import sys
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres@localhost:5432/todoapp"
@@ -19,14 +20,34 @@ class Todo(db.Model):
 @app.route("/")
 def index():
     todoItems = Todo.query.all()
-    return render_template('index.html', data = todoItems)
+    return render_template("index.html", data = todoItems)
 
-@app.route("/create/todo", methods=["POST"])
+@app.route("/todos/get", methods=['GET'])
+def getTodos():
+    todoItems = Todo.query.all()
+    
+    return {'data:': jsonify(todoItems)}
+
+@app.route("/todo/create", methods=["POST"])
 def addTodo():
-    if(request.method == 'POST'):
-        description = request.form.get('description')
-        new_todo = Todo(description = description)
+    data = {}
+    error = False
+
+    try:
+        description = request.get_json()['description']
+        new_todo = Todo(descriptionx = description)
         db.session.add(new_todo)
         db.session.commit()
-        return redirect(url_for('index'))
-    return 'request method not allowed'
+        data = { 'description': new_todo.description }
+    except: 
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+    finally:
+        db.session.close()
+    if error:
+        abort(400)
+    else:
+        return data
+    
+

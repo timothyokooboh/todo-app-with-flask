@@ -34,15 +34,55 @@
 </head>
 <body>
     <h4>Building a todo app with flask!</h4>
-    <ul>
+    <ul id="list">
         {% for item in data %}
             <li>{{ item.description }}</li>
         {% endfor %}
     </ul>
 
-    <form action="/create/todo" method="POST">
+    <form onsubmit="event.preventDefault(); handleFormSubmit()" name="todo">
         <textarea name="description" id="description" placeholder="Add description of task"></textarea>
-        <button type="submit">Add todo</button>
+        <button type="submit">Add todos</button>
     </form>
+
+    <script>
+        const handleFormSubmit = () => {
+            const description = document.forms['todo'].description
+            console.log(description.value)
+
+            fetch("/todo/create", {
+                method: "POST",
+                body: JSON.stringify({ 'description': description.value }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const list = document.querySelector("#list");
+                const li = document.createElement("li")
+                li.textContent = data.description;
+                list.appendChild(li)
+            })
+            .catch(err => console.log(err))
+        }
+
+        const getTodos = () => {
+            console.log("omo")
+            fetch('/todos/get', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+            })
+            .catch(err => console.log(err))
+        }
+
+        // getTodos()
+    </script>
 </body>
 </html>
