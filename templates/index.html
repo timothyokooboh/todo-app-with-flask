@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        form {
+            width: 350px;
+            max-width: 90%;
+            margin-top: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 5px;
+            outline: none;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            padding: 5px 15px;
+            color: #fff;
+            background-color: dodgerblue;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h4>Building a todo app with flask!</h4>
+    <ul>
+        {% for item in data %}
+            <li>{{ item.description }}</li>
+        {% endfor %}
+    </ul>
+
+    <form action="/create/todo" method="POST">
+        <textarea name="description" id="description" placeholder="Add description of task"></textarea>
+        <button type="submit">Add todo</button>
+    </form>
+</body>
+</html>
